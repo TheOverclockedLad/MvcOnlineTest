@@ -1,0 +1,24 @@
+﻿@model Question
+
+@{
+//ViewBag.Title = Model.TestName + "Test";
+}
+
+<br />
+
+@using (Html.BeginForm("Test", "StartTest"))
+{
+    <h4>@Model.Que</h4> <br />
+    <input type="radio" name="option" value="@Model.OptionA" /> @Model.OptionA <br />
+    <input type="radio" name="option" value="@Model.OptionB" /> @Model.OptionB <br />
+    <input type="radio" name="option" value="@Model.OptionC" /> @Model.OptionC <br />
+    <input type="radio" name="option" value="@Model.OptionD" /> @Model.OptionD <br />
+
+    <hr />
+
+    <div class="text-center">
+        <button type="submit" class="btn-primary btn-lg glyphicon glyphicon-arrow-left" value="" @Html.Raw(ViewBag.DisabledPrev == true ? "Disabled=''" : "") name="previous"></button>
+        <button type="submit" class="btn-primary btn-lg glyphicon glyphicon-saved" value="" name="submit"></button>
+        <button type="submit" class="btn-primary btn-lg glyphicon glyphicon-arrow-right" value="" @Html.Raw(ViewBag.DisabledNext == true ? "Disabled=''" : "") name="next"></button>
+    </div>
+}

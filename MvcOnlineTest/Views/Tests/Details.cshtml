@@ -1,0 +1,7 @@
+﻿@model MvcOnlineTest.Models.Test
+
+<h2>Add or remove questions in the @Model.TestName test</h2>
+
+@Html.ActionLink("Add new question", "Create", "Questions", new { redirect = true }, null)
+
+@Html.Partial("_Details", Model.Questions)

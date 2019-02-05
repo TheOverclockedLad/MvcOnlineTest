@@ -1,0 +1,38 @@
+﻿@model IEnumerable<MvcOnlineTest.Models.Question>
+
+<table class="table table-bordered text-center">
+    <tr>
+        <th>Select</th>
+        <th>Question</th>
+        <th>A</th>
+        <th>B</th>
+        <th>C</th>
+        <th>D</th>
+        <th>Answer</th>
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td><input type="checkbox" class="checkbox" /></td>
+
+            <td>@Html.DisplayFor(modelItem => item.Que)</td>
+
+            <td>@Html.DisplayFor(modelItem => item.OptionA)</td>
+
+            <td>@Html.DisplayFor(modelItem => item.OptionB)</td>
+
+            <td>@Html.DisplayFor(modelItem => item.OptionC)</td>
+
+            <td>@Html.DisplayFor(modelItem => item.OptionD)</td>
+
+            <td>@Html.DisplayFor(modelItem => item.Answer)</td>
+
+            <td>
+                @Html.ActionLink("Edit", "Edit", "Questions", new { id = item.QuestionId/*, redirect = true*/}, null) |
+                @Html.ActionLink("Delete", "DeleteTestQue", "Tests", new { id = item.QuestionId}, null)
+            </td>
+        </tr>
+    }
+</table>

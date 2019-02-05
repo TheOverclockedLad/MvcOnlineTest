@@ -1,0 +1,31 @@
+﻿@model IEnumerable<MvcOnlineTest.Models.Test>
+
+@{
+    ViewBag.Title = "All tests";
+}
+
+<h2>Select a test from below and click or tap the "Start Test" button to start the test</h2>
+
+<div class="row">
+    @foreach (var item in Model)
+    {
+        <div class="col-md-4">
+            <div class="panel panel-primary text-center">
+                <div class="panel-heading">@item.TestName</div>
+
+                <div class="panel-body">
+                    @item.Questions.Count question(s) <hr />
+                    @item.MarksPerQue marks per question
+                </div>
+
+                <div class="panel-footer">
+                    @using (Html.BeginForm("Test", "StartTest", new { id = item.TestId }))
+                    {
+                        @Html.HiddenFor(modelItem => item.TestId)
+                        <button type="submit" class="btn-primary">Start Test</button>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+</div>
