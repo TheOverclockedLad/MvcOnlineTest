@@ -1,0 +1,20 @@
+﻿@model Question
+
+@using (Ajax.BeginForm("Test", "StartTest", new AjaxOptions { HttpMethod = "Post", InsertionMode = InsertionMode.Replace, UpdateTargetId = "Question" }))
+{
+    <div id="Question">
+        <h4>@Model.Que</h4> <br />
+        <input type="radio" name="option" value="@Model.OptionA" /> @Model.OptionA <br />
+        <input type="radio" name="option" value="@Model.OptionB" /> @Model.OptionB <br />
+        <input type="radio" name="option" value="@Model.OptionC" /> @Model.OptionC <br />
+        <input type="radio" name="option" value="@Model.OptionD" /> @Model.OptionD <br />
+
+        <hr />
+
+        <div class="text-center">
+            <button type="submit" class="btn-primary btn-lg glyphicon glyphicon-arrow-left" value="" name="previous" @(ViewBag.DisabledPrev == true ? "disabled" : "")></button>
+            <button type="submit" class="btn-primary btn-lg glyphicon glyphicon-saved" value="" name="submit"></button>
+            <button type="submit" class="btn-primary btn-lg glyphicon glyphicon-arrow-right" value="" name="next" @(ViewBag.DisabledNext == true ? "disabled" : "")></button>
+        </div>
+    </div>
+}

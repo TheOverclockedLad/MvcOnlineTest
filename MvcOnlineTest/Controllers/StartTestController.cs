@@ -1,4 +1,6 @@
 ﻿using MvcOnlineTest.Models;
+using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Web.Mvc;
 
@@ -6,97 +8,203 @@ namespace MvcOnlineTest.Controllers
 {
     public class StartTestController : Controller
     {
-        static bool submitFlag = false;
-        static int staticIndex = 0, attempted = 0, correct = 0, score = 0;
         private MvcOnlineTestDb db = new MvcOnlineTestDb();
 
-        // GET: StartTest
+        // GET: StartTest - Display all tests
         public ActionResult Index()
         {
             return View(db.Tests);
         }
 
-        public ActionResult Test(int? id = null, int index = 0, string next = null, string previous = null, string option = null, string submit = null)
+        [HttpPost]
+        // Retrieve questions from selected test and store student name
+        public ActionResult Index(string name, int id)
         {
-            // if the user clicks the back button of browser after submitting the test
-            if (submit == null && submitFlag == true)
-                return Content("<h1>Session expired</h1>");
+            Session["StudentName"] = name;
 
-            index = staticIndex;
-
-            var test = db.Tests.Find(id);
+            Test test = db.Tests.Find(id);
             if (test == null)
                 return HttpNotFound();
 
-            var ques = from q in test.Questions select q;
+            Session["TestId"] = id;
+            Session["MarksPerQue"] = test.MarksPerQue;
+            Session["QuestionList"] = (from q in test.Questions select q).ToList();
+            Session["Question"] = ((List<Question>)Session["QuestionList"]).First();
+            Session["Attempted"] = 0;
+            Session["Correct"] = 0;
+            Session["Score"] = 0;
+            ViewBag.DisabledPrev = true;
 
-            // if the result page reloads
-            if (submitFlag)
+            return View("Test", (Question)Session["Question"]);
+        }
+
+        //public PartialViewResult PreviousQuestion(string option)
+        //{
+        //    int index = ((List<Question>)Session["QuestionList"]).IndexOf((Question)Session["Question"]);
+
+        //    if (--index == 0)
+        //    {
+        //        ViewBag.DisabledPrev = true;
+        //        //return View("Test", (Question)Session["Question"]);
+        //    }
+
+        //    Session["Question"] = ((List<Question>)Session["QuestionList"]).ElementAt(index);
+
+        //    return PartialView("_TestQuestions", (Question)Session["Question"]);
+        //}
+
+        //public ActionResult NextQuestion(string option)
+        //{
+        //    if (option != null)
+        //        return Content("<script>alert('Hello World! " + option + "')</script>");
+
+        //    int index = ((List<Question>)Session["QuestionList"]).IndexOf((Question)Session["Question"]);
+
+        //    Session["Question"] = ((List<Question>)Session["QuestionList"]).ElementAt(++index);
+
+        //    // if the last question is displayed
+        //    if (((List<Question>)Session["QuestionList"]).Count() - index == 1)
+        //        ViewBag.DisabledNext = true;
+
+        //    return PartialView("_TestQuestions", (Question)Session["Question"]);
+        //}
+
+        [HttpGet]
+        public ActionResult Test(string direction)
+        {
+            int index = ((List<Question>)Session["QuestionList"]).IndexOf((Question)Session["Question"]);
+
+            Session["Question"] = direction == "next" ? ((List<Question>)Session["QuestionList"]).ElementAt(++index) : ((List<Question>)Session["QuestionList"]).ElementAt(--index);
+
+            if (index == 0)
+                ViewBag.DisabledPrev = true;
+            else if (((List<Question>)Session["QuestionList"]).Count - index == 1)
+                ViewBag.DisabledNext = true;
+
+            return PartialView("_TestQuestions", (Question)Session["Question"]);
+        }
+
+        [HttpPost]
+        public ActionResult Test(string next, string option, string previous, string submit)
+        {
+            if (option != null)
             {
-                option = null;
-                int[] parameters = { attempted, correct, ques.Count(), score };
-                ViewData["parameters"] = parameters;
-                return View("TestResult");
-            }
+                Session["Attempted"] = (int)Session["Attempted"] + 1;
 
-            // if the question page reloads
-            if (next == null && previous == null && submit == null && option != null)
-                option = null;
-
-            // if a radio-button is selected and the form is submitted by clicking one of the next, previous, or the submit buttons
-            if ((option != null) && (next != null || previous != null || submit != null))
-            {
-                attempted++;
-                if (option == ques.ElementAt(index).Answer)
+                if (option == ((Question)Session["Question"]).Answer)
                 {
-                    correct++;
-                    score = correct * test.MarksPerQue;
+                    Session["Correct"] = (int)Session["Correct"] + 1;
+                    Session["Score"] = (int)Session["Correct"] * (int)Session["MarksPerQue"];
                 }
             }
 
-            // if the user ends the test
             if (submit != null)
             {
-                submitFlag = true;
-                option = null;
-                int[] parameters = { attempted, correct, ques.Count(), score };
+                int[] parameters = { (int)Session["Attempted"], (int)Session["Correct"], ((List<Question>)Session["QuestionList"]).Count, (int)Session["Score"] };
                 ViewData["parameters"] = parameters;
-                return View("TestResult");
+                DoLeaderboardStuff();
+                List<VM_Leaderboard> model =
+                                (from st in db.StudentsTests
+                                join s in db.Students on new { st.StudentId } equals new { s.StudentId } into ss
+                                from s in ss
+                                orderby st.Score descending
+                                select new VM_Leaderboard { FirstName = s.FirstName, LastName = s.LastName, Score = st.Score }).ToList();
+
+                return PartialView("_TestResult", model);
             }
 
-            // if the next button is clicked
-            if (next != null)
-            {
-                staticIndex = ++index;
-                // if the last question is displayed
-                if (ques.Count() - staticIndex == 1)
-                    ViewBag.DisabledNext = true;
-                return View(ques.ElementAt(index));
-            }
-
-            // if the first question is displayed
-            if (staticIndex == 0)
-                ViewBag.DisabledPrev = true;
-
-            // if the previous button is clicked
-            if (previous != null)
-            {
-                staticIndex = --index;
-                if (staticIndex == 0)
-                    ViewBag.DisabledPrev = true;
-                return View(ques.ElementAt(index));
-            }
-
-            staticIndex = index;
-
-            return View(ques.ElementAt(index));
+            return RedirectToAction("Test", new { direction = next == null ? "previous" : "next" });
         }
 
-        protected override void Dispose(bool disposing)
+        //public ActionResult Test(string next = null, string previous = null, string option = null, string submit = null)
+        //{
+        //    int index = ((List<Question>)Session["QuestionList"]).IndexOf((Question)Session["Question"]);
+
+        //    // if the question page reloads
+        //    if (next == null && previous == null && submit == null && option != null)
+        //        option = null;
+
+        //    // if a radio-button is selected and the form is submitted by clicking one of the next, previous, or the submit buttons
+        //    if ((option != null) && (next != null || previous != null || submit != null))
+        //    {
+        //        Session["Attempted"] = (int)Session["Attempted"] + 1;
+
+        //        if (option == ((Question)Session["Question"]).Answer)
+        //        {
+        //            Session["Correct"] = (int)Session["Correct"] + 1;
+        //            Session["Score"] = (int)Session["Correct"] * (int)Session["MarksPerQue"];
+        //        }
+        //    }
+
+        //    // if the user ends the test
+        //    if (submit != null)
+        //    {
+        //        int[] parameters = { (int)Session["Attempted"], (int)Session["Correct"], ((List<Question>)Session["QuestionList"]).Count, (int)Session["Score"] };
+        //        ViewData["parameters"] = parameters;
+        //        //DisplayLeaderboard(staticName, score);
+        //        return View("TestResult");
+        //    }
+
+        //    // if the next button is clicked
+        //    if (next != null)
+        //    {
+        //        Session["Question"] = ((List<Question>)Session["QuestionList"]).ElementAt(++index);
+
+        //        // if the last question is displayed
+        //        if (((List<Question>)Session["QuestionList"]).Count() - index == 1)
+        //            ViewBag.DisabledNext = true;
+        //    }
+
+        //    // if the previous button is clicked
+        //    if (previous != null)
+        //    {
+        //        if (--index >= 0)
+        //        {
+        //            Session["Question"] = ((List<Question>)Session["QuestionList"]).ElementAt(index);
+        //            if (index == 0)
+        //                ViewBag.DisabledPrev = true;
+        //        }
+        //    }
+
+        //    //return View((Question)Session["Question"]);
+        //    return PartialView("_TestQuestions", (Question)Session["Question"]);
+        //}
+
+        public void DoLeaderboardStuff()
         {
-            if (db != null)
-                db.Dispose();
-            base.Dispose(disposing);
+            using (MvcOnlineTestDb db = new MvcOnlineTestDb())
+            {
+                if (ModelState.IsValid)
+                {
+                    Student student = new Student();
+
+                    string[] name = Session["StudentName"].ToString().Split(' ');
+                    string firstName = name[0];
+                    string lastName = string.Empty;
+                    if (name.Length >= 2)
+                        for (byte i = 1; i < name.Length; i++)
+                            lastName += name[i] + ' ';
+                    
+                    student.FirstName = firstName;
+                    student.LastName = lastName;
+                    db.Students.Add(student);
+                    db.SaveChanges();
+
+                    StudentTest st = new StudentTest();
+                    st.StudentId = student.StudentId;
+                    st.TestId = (int)Session["TestId"];
+                    st.Score = (int)Session["Score"];
+                    db.StudentsTests.Add(st);
+                    db.SaveChanges();
+                }
+            }
         }
+
+        //protected override void Dispose(bool disposing)
+        //{
+        //    if (db != null)
+        //        db.Dispose();
+        //    base.Dispose(disposing);
+        //}
     }
 }

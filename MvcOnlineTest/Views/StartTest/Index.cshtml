@@ -1,10 +1,10 @@
-﻿@model IEnumerable<MvcOnlineTest.Models.Test>
+﻿@model IEnumerable<Test>
 
 @{
     ViewBag.Title = "All tests";
 }
 
-<h2>Select a test from below and click or tap the "Start Test" button to start the test</h2>
+<h2>Select a test from below, enter your name, and click or tap the "Start Test" button to start the test</h2>
 
 <div class="row">
     @foreach (var item in Model)
@@ -19,10 +19,12 @@
                 </div>
 
                 <div class="panel-footer">
-                    @using (Html.BeginForm("Test", "StartTest", new { id = item.TestId }))
+                    @using (Html.BeginForm("Index", "StartTest", new { id = item.TestId }))
                     {
+                        <input data-val="true" data-val-required="full name must be filled in" id="textBoxName" type="text" name="name" class="form-control text-info" placeholder="Enter your full name" />
+                        <br />
                         @Html.HiddenFor(modelItem => item.TestId)
-                        <button type="submit" class="btn-primary">Start Test</button>
+                        <button id="buttonSubmit"type="submit" class="btn-primary">Start Test</button>
                     }
                 </div>
             </div>

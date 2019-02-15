@@ -1,5 +1,0 @@
-﻿@{int[] parameters = (int[])ViewData["parameters"]; }
-
-<h4>Questions attempted: @parameters[0] / @parameters[2]</h4> <br />
-<h4>Correct answers: @parameters[1]</h4> <br />
-<h4>Score: @parameters[3] / @((parameters[1] == 0 ? 0 : parameters[3] / parameters[1]) * parameters[2])</h4> <br />
