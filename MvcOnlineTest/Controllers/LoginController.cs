@@ -5,7 +5,8 @@ using System.Web.Security;
 
 namespace MvcOnlineTest.Controllers
 {
-    public class LoginsController : Controller
+    [HandleError()]
+    public class LoginController : Controller
     {
         public ActionResult Login(string returnUrl)
         {
@@ -36,7 +37,7 @@ namespace MvcOnlineTest.Controllers
                         if (Url.IsLocalUrl(returnUrl))
                             return Redirect(returnUrl);
                         else
-                            return RedirectToAction("Index", "Home");
+                            return RedirectToAction("Index", "StartTest");
                     }
                     else
                         ModelState.AddModelError("", "Incorrect username and/or password");
@@ -49,7 +50,7 @@ namespace MvcOnlineTest.Controllers
         public ActionResult Logout()
         {
             FormsAuthentication.SignOut();
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction("Index", "StartTest");
         }
     }
 }

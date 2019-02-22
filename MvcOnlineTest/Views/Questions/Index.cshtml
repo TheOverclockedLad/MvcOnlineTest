@@ -35,35 +35,34 @@
         <th></th>
     </tr>
 
-@foreach (var item in Model) {
+@foreach (Question question in Model) {
     <tr>
         <td>
-            <input type="checkbox" name="Select" value="@item.QuestionId" />
+            <input type="checkbox" name="Select" value="@question.QuestionId" />
         </td>
         <td>
-            @Html.DisplayFor(modelItem => item.Que)
+            @Html.DisplayFor(modelItem => question.Que)
         </td>
         <td>
-            @Html.DisplayFor(modelItem => item.OptionA)
+            @Html.DisplayFor(modelItem => question.OptionA)
         </td>
         <td>
-            @Html.DisplayFor(modelItem => item.OptionB)
+            @Html.DisplayFor(modelItem => question.OptionB)
         </td>
         <td>
-            @Html.DisplayFor(modelItem => item.OptionC)
+            @Html.DisplayFor(modelItem => question.OptionC)
         </td>
         <td>
-            @Html.DisplayFor(modelItem => item.OptionD)
+            @Html.DisplayFor(modelItem => question.OptionD)
         </td>
         <td>
-            @Html.DisplayFor(modelItem => item.Answer)
+            @Html.DisplayFor(modelItem => question.Answer)
         </td>
         <td>
-            @Html.ActionLink("Edit", "Edit", new { id=item.QuestionId }) |
-            @Html.ActionLink("Details", "Details", new { id=item.QuestionId }) |
-            @Html.ActionLink("Delete", "Delete", new { id=item.QuestionId })
+            @Html.ActionLink("Edit", "Edit", new { id=question.QuestionId }) |
+            @Html.ActionLink("Details", "Details", new { id=question.QuestionId }) |
+            @Html.ActionLink("Delete", "Delete", new { id=question.QuestionId })
         </td>
     </tr>
 }
-
 </table>

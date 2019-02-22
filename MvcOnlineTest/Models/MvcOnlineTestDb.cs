@@ -6,7 +6,6 @@ namespace MvcOnlineTest.Models
     {
         public MvcOnlineTestDb() : base("MvcOnlineTestDb") { }
 
-        public DbSet<Leaderboard> Leaderboard { get; set; }
         public DbSet<Login> Login { get; set; }
         public DbSet<Test> Tests { get; set; }
         public DbSet<Question> Questions { get; set; }

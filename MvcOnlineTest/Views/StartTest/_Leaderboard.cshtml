@@ -1,4 +1,4 @@
-﻿@model IList<VM_Leaderboard>
+﻿@model IList<_Leaderboard>
 
 <div class="h1 text-center">Leaderboard</div>
 
@@ -9,7 +9,7 @@
         <th>Score</th>
     </tr>
 
-    @foreach (var item in Model)
+    @foreach (_Leaderboard item in Model)
     {
         <tr>
             <td>@Html.DisplayFor(modelItem => item.FirstName)</td>

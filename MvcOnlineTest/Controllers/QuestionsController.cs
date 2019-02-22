@@ -6,6 +6,7 @@ using MvcOnlineTest.Models;
 
 namespace MvcOnlineTest.Controllers
 {
+    [Authorize(Roles = "admin"), HandleError()]
     public class QuestionsController : Controller
     {
         private MvcOnlineTestDb db = new MvcOnlineTestDb();
@@ -13,7 +14,7 @@ namespace MvcOnlineTest.Controllers
         // GET: Questions
         public ActionResult Index()
         {
-            var questions = db.Questions.Include(q => q.Test);
+            IQueryable<Question> questions = db.Questions.Include(q => q.Test);
             return View(questions.ToList());
         }
 

@@ -1,4 +1,4 @@
-﻿@model IEnumerable<MvcOnlineTest.Models.Test>
+﻿@model IEnumerable<Test>
 
 @{
     ViewBag.Title = "Index";
@@ -20,7 +20,7 @@
         <th></th>
     </tr>
 
-@foreach (var item in Model) {
+@foreach (Test item in Model) {
     <tr>
         <td>@Html.DisplayFor(modelItem => item.TestName)</td>
 

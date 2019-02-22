@@ -1,6 +1,6 @@
-﻿namespace MvcOnlineTest.Models
+﻿namespace MvcOnlineTest.ViewModels
 {
-    public class VM_Leaderboard
+    public class _Leaderboard
     {
         public string FirstName { get; set; }
         public string LastName { get; set; }

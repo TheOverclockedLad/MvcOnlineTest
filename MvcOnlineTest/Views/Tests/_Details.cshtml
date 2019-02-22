@@ -1,4 +1,4 @@
-﻿@model IEnumerable<MvcOnlineTest.Models.Question>
+﻿@model IEnumerable<Question>
 
 <table class="table table-bordered text-center">
     <tr>
@@ -12,7 +12,7 @@
         <th></th>
     </tr>
 
-    @foreach (var item in Model)
+    @foreach (Question item in Model)
     {
         <tr>
             <td><input type="checkbox" class="checkbox" /></td>
