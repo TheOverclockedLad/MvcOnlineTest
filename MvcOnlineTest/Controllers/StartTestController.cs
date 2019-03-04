@@ -9,7 +9,8 @@ namespace MvcOnlineTest.Controllers
     [HandleError()]
     public class StartTestController : Controller
     {
-        private MvcOnlineTestDb db = new MvcOnlineTestDb();
+        MvcOnlineTestDb db = new MvcOnlineTestDb();
+        _TestQuestions viewModel = new _TestQuestions();
 
         // GET: StartTest - Display all tests
         public ActionResult Index()
@@ -27,50 +28,76 @@ namespace MvcOnlineTest.Controllers
             if (test == null)
                 return HttpNotFound();
 
-            Session["TestId"] = id;
-            Session["MarksPerQue"] = test.MarksPerQue;
-            Session["QuestionList"] = (from q in test.Questions select q).ToList();
-            Session["Question"] = ((List<Question>)Session["QuestionList"]).First();
-            Session["Attempted"] = 0;
-            Session["Correct"] = 0;
-            Session["Score"] = 0;
+            viewModel.TestId = id;
+
+            viewModel.MarksPerQue = test.MarksPerQue;
+
+            viewModel.QuestionList = (from q in test.Questions select q).ToList();
+
+            viewModel.QueAns.Add(viewModel.QuestionList.First(), null);
+
+            viewModel.Question = viewModel.QuestionList.First();
+
+            viewModel.Attempted = 0;
+
+            viewModel.Correct = 0;
+
+            viewModel.Score = 0;
+
             ViewBag.DisabledPrev = true;
 
-            return View("Test", (Question)Session["Question"]);
+            Session["ViewModel"] = viewModel;
+
+            return View("Test", viewModel.Question);
         }
 
         [HttpGet]
         public ActionResult Test(string direction)
         {
-            int index = ((List<Question>)Session["QuestionList"]).IndexOf((Question)Session["Question"]);
+            viewModel = Session["ViewModel"] as _TestQuestions;
 
-            Session["Question"] = direction == "next" ? ((List<Question>)Session["QuestionList"]).ElementAt(++index) : ((List<Question>)Session["QuestionList"]).ElementAt(--index);
+            int index = viewModel.QuestionList.IndexOf(viewModel.Question);
+
+            viewModel.Question = direction == "next" ? viewModel.QuestionList.ElementAt(++index) : viewModel.QuestionList.ElementAt(--index);
+
+            if (!viewModel.QueAns.ContainsKey(viewModel.Question))
+                viewModel.QueAns.Add(viewModel.Question, null);
 
             if (index == 0)
                 ViewBag.DisabledPrev = true;
-            else if (((List<Question>)Session["QuestionList"]).Count - index == 1)
+            else if (viewModel.QuestionList.Count - index == 1)
                 ViewBag.DisabledNext = true;
 
-            return PartialView("_TestQuestions", (Question)Session["Question"]);
+            ViewBag.Option = viewModel.QueAns[viewModel.Question];
+
+            return PartialView("_TestQuestions", viewModel.Question);
         }
 
         [HttpPost]
         public ActionResult Test(string next, string option, string previous, string submit)
         {
+            viewModel = Session["ViewModel"] as _TestQuestions;
+
             if (option != null)
             {
-                Session["Attempted"] = (int)Session["Attempted"] + 1;
-
-                if (option == ((Question)Session["Question"]).Answer)
+                if (viewModel.QueAns[viewModel.Question] == null)
                 {
-                    Session["Correct"] = (int)Session["Correct"] + 1;
-                    Session["Score"] = (int)Session["Correct"] * (int)Session["MarksPerQue"];
+                    viewModel.QueAns[viewModel.Question] = option;
+                    viewModel.Attempted += 1;
+                }
+                else
+                    viewModel.QueAns[viewModel.Question] = option;
+
+                if (option == viewModel.Question.Answer)
+                {
+                    viewModel.Correct += 1;
+                    viewModel.Score = viewModel.Correct * viewModel.MarksPerQue;
                 }
             }
 
             if (submit != null)
             {
-                int[] parameters = { (int)Session["Attempted"], (int)Session["Correct"], ((List<Question>)Session["QuestionList"]).Count, (int)Session["Score"] };
+                int[] parameters = { viewModel.Attempted, viewModel.Correct, viewModel.QuestionList.Count, viewModel.Score };
                 ViewData["parameters"] = parameters;
                 DoLeaderboardStuff();
                 List<_Leaderboard> model =
@@ -78,7 +105,8 @@ namespace MvcOnlineTest.Controllers
                                 join s in db.Students on new { st.StudentId } equals new { s.StudentId } into ss
                                 from s in ss
                                 orderby st.Score descending
-                                select new _Leaderboard { FirstName = s.FirstName, LastName = s.LastName, Score = st.Score }).ToList();
+                                select new _Leaderboard { FirstName = s.FirstName, LastName = s.LastName, Score = st.Score }
+                                ).ToList();
 
                 return PartialView("_TestResult", model);
             }
@@ -104,13 +132,13 @@ namespace MvcOnlineTest.Controllers
                     student.FirstName = firstName;
                     student.LastName = lastName;
                     db.Students.Add(student);
-                    db.SaveChanges();
 
                     StudentTest st = new StudentTest();
                     st.StudentId = student.StudentId;
-                    st.TestId = (int)Session["TestId"];
-                    st.Score = (int)Session["Score"];
+                    st.TestId = viewModel.TestId;
+                    st.Score = viewModel.Score;
                     db.StudentsTests.Add(st);
+
                     db.SaveChanges();
                 }
             }

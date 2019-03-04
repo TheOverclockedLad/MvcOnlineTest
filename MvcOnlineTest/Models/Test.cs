@@ -15,6 +15,8 @@ namespace MvcOnlineTest.Models
         [Range(1, 5), Required, Display(Name = "Marks per question")]
         public int MarksPerQue { get; set; }
 
+        public System.DateTime? time { get; set; } 
+
         public virtual Student Student { get; set; }
         public virtual ICollection<Question> Questions { get; set; }
     }

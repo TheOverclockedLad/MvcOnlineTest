@@ -26,14 +26,11 @@ namespace MvcOnlineTest.Controllers
             {
                 using (MvcOnlineTestDb db = new MvcOnlineTestDb())
                 {
-                    string username = model.username;
-                    string password = model.password;
+                    bool authenticUser = db.Login.Any(user => user.username == model.username && user.password == model.password);
 
-                    bool authentic = db.Login.Any(user => user.username == username && user.password == password);
-
-                    if (authentic)
+                    if (authenticUser)
                     {
-                        FormsAuthentication.SetAuthCookie(username, false);
+                        FormsAuthentication.SetAuthCookie(model.username, false);
                         if (Url.IsLocalUrl(returnUrl))
                             return Redirect(returnUrl);
                         else
