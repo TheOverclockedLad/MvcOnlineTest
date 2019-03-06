@@ -11,5 +11,6 @@ namespace MvcOnlineTest.Models
         public DbSet<Question> Questions { get; set; }
         public DbSet<Student> Students { get; set; }
         public DbSet<StudentTest> StudentsTests { get; set; }
+        public DbSet<TestQuestion> TestsQuestions { get; set; }
     }
 }

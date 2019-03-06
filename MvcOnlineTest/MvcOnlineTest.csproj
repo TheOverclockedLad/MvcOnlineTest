@@ -200,6 +200,10 @@
     <Compile Include="Migrations\201903040550469_AlterTestAddTime.Designer.cs">
       <DependentUpon>201903040550469_AlterTestAddTime.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201903060932215_CreateTestQuestion.cs" />
+    <Compile Include="Migrations\201903060932215_CreateTestQuestion.Designer.cs">
+      <DependentUpon>201903060932215_CreateTestQuestion.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Login.cs" />
     <Compile Include="Models\MvcOnlineTestDb.cs" />
@@ -208,6 +212,7 @@
     <Compile Include="Models\Student.cs" />
     <Compile Include="Models\StudentTest.cs" />
     <Compile Include="Models\Test.cs" />
+    <Compile Include="Models\TestQuestion.cs" />
     <Compile Include="ViewModels\_Leaderboard.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
@@ -298,6 +303,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201903040550469_AlterTestAddTime.resx">
       <DependentUpon>201903040550469_AlterTestAddTime.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201903060932215_CreateTestQuestion.resx">
+      <DependentUpon>201903060932215_CreateTestQuestion.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

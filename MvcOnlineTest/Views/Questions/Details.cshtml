@@ -11,14 +11,6 @@
     <hr />
     <dl class="dl-horizontal">
         <dt>
-            @Html.DisplayNameFor(model => model.Test.TestName)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.Test.TestName)
-        </dd>
-
-        <dt>
             @Html.DisplayNameFor(model => model.Que)
         </dt>
 
@@ -66,6 +58,8 @@
             @Html.DisplayFor(model => model.Answer)
         </dd>
 
+        <dt>Included in test(s)</dt>
+        <dd> @{ if (!System.Convert.ToBoolean(ViewBag.Tests.Count)) { @Html.Raw("None"); } else { foreach (string test in ViewBag.Tests) { @Html.DisplayFor(testItem => test); @Html.Raw("<br/>"); } } } </dd>
     </dl>
 </div>
 <p>

@@ -22,14 +22,21 @@ namespace MvcOnlineTest.Controllers
         public ActionResult Details(int? id)
         {
             if (id == null)
-            {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
+
             Question question = db.Questions.Find(id);
             if (question == null)
-            {
                 return HttpNotFound();
-            }
+
+            System.Collections.Generic.List<string> tests = 
+                                                    (from tq in db.TestsQuestions
+                                                     join t in db.Tests on new { tq.TestId } equals new { t.TestId } into qt
+                                                     where tq.QuestionId == id
+                                                     from q in qt
+                                                     select q.TestName
+                                                     ).ToList();
+            ViewBag.Tests = tests;
+
             return View(question);
         }
 
@@ -45,11 +52,20 @@ namespace MvcOnlineTest.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "QuestionId,TestId,Que,OptionA,OptionB,OptionC,OptionD,Answer")] Question question, bool redirect = false)
+        public ActionResult Create(Question question, bool redirect = false)
         {
             if (ModelState.IsValid)
             {
                 db.Questions.Add(question);
+
+                if (question.TestId != null)
+                {
+                    TestQuestion tq = new TestQuestion();
+                    tq.TestId = (int)question.TestId;
+                    tq.QuestionId = question.QuestionId;
+                    db.TestsQuestions.Add(tq);
+                }
+
                 db.SaveChanges();
 
                 if (redirect)
