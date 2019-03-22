@@ -5,7 +5,7 @@
     <div id="Question">
         <div class="row">
             <h4 class="col-md-7">@Model.Que</h4> <br />
-            <h4 class="text-right col-md-5 countdown" id="timer">Timer</h4>
+            @*<h4 class="text-right col-md-5 countdown" id="timer">Timer</h4>*@
         </div>
 
         <input type="radio" name="option" value="@Model.OptionA" @(ViewBag.Option == Model.OptionA ? "checked" : "")/> @Model.OptionA <br />
@@ -23,11 +23,11 @@
     </div>
 }
 
-@*@Scripts.Render("/bundles/mvcot")
+@*Scripts.Render("/bundles/mvcot")*@
 
-<script type="text/javascript" src="~/Scripts/jquery.countdown.min.js"></script>
+@*<script type="text/javascript" src="~/Scripts/jquery.countdown.min.js"></script>*@
 
-<script type="text/javascript">
+@*<script type="text/javascript">
     $('#timer').countdown(new Date().setSeconds(30)).on('update.countdown', function (event) {
         var format = '%H:%M:%S';
         $(this).html(event.strftime(format));
@@ -35,7 +35,7 @@
     .on('finish.countdown', function (event) {
         $(this).html('This offer has expired!');
     });
-</script>
+</script>*@
 
 @*<script>
 // Set the date we're counting down to
@@ -66,4 +66,4 @@ var x = setInterval(function() {
     document.getElementById("demo").innerHTML = "EXPIRED";
   }
 }, 1000);
-</script>*@*@
+</script>*@

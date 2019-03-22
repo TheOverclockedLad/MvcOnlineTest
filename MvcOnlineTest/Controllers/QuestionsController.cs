@@ -15,6 +15,7 @@ namespace MvcOnlineTest.Controllers
         public ActionResult Index()
         {
             IQueryable<Question> questions = db.Questions.Include(q => q.Test);
+            ViewBag.TestId = new SelectList(db.Tests, "TestId", "TestName");
             return View(questions.ToList());
         }
 
@@ -146,6 +147,19 @@ namespace MvcOnlineTest.Controllers
             Question question = db.Questions.Find(id);
             db.Questions.Remove(question);
             db.SaveChanges();
+            return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        public ActionResult DeleteSelected(System.Collections.Generic.IEnumerable<int> selected)
+        {
+            foreach (int id in selected)
+            {
+                Question q = db.Questions.Find(id);
+                db.Questions.Remove(q);
+                db.SaveChanges();
+            }
+
             return RedirectToAction("Index");
         }
 

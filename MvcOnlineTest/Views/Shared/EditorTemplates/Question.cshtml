@@ -1,0 +1,30 @@
+﻿@model Question
+
+<tr>
+    <td>
+        <input type="checkbox" id="selected" name="selected" value="@Model.QuestionId" />
+    </td>
+    <td>
+        @Html.DisplayFor(modelItem => Model.Que)
+    </td>
+    <td>
+        @Html.DisplayFor(modelItem => Model.OptionA)
+    </td>
+    <td>
+        @Html.DisplayFor(modelItem => Model.OptionB)
+    </td>
+    <td>
+        @Html.DisplayFor(modelItem => Model.OptionC)
+    </td>
+    <td>
+        @Html.DisplayFor(modelItem => Model.OptionD)
+    </td>
+    <td>
+        @Html.DisplayFor(modelItem => Model.Answer)
+    </td>
+    <td>
+        @Html.ActionLink("Edit", "Edit", new { id = Model.QuestionId }) |
+        @Html.ActionLink("Details", "Details", new { id = Model.QuestionId }) |
+        @Html.ActionLink("Delete", "Delete", new { id = Model.QuestionId })
+    </td>
+</tr>

@@ -84,14 +84,20 @@ namespace MvcOnlineTest.Controllers
                 {
                     viewModel.QueAns[viewModel.Question] = option;
                     viewModel.Attempted += 1;
+                    if (option == viewModel.Question.Answer)
+                    {
+                        viewModel.Correct += 1;
+                        viewModel.Score = viewModel.Correct * viewModel.MarksPerQue;
+                    }
                 }
-                else
-                    viewModel.QueAns[viewModel.Question] = option;
-
-                if (option == viewModel.Question.Answer)
+                else if (viewModel.QueAns[viewModel.Question] != option)
                 {
-                    viewModel.Correct += 1;
-                    viewModel.Score = viewModel.Correct * viewModel.MarksPerQue;
+                    viewModel.QueAns[viewModel.Question] = option;
+                    if (option == viewModel.Question.Answer)
+                    {
+                        viewModel.Correct += 1;
+                        viewModel.Score = viewModel.Correct * viewModel.MarksPerQue;
+                    }
                 }
             }
 
